@@ -12,6 +12,8 @@ You can also change the smiley button to anything by adding 24x24 px \*.png file
 
 Examples can be seen in the `icons` folder.
 
+Other than being an API to control the game from external tools, this also provides the quality of life feature of you being able to double click on a field and then it will clear all adjacent fields not being marked by af flag. If the number of flags is less than the number of adjacent bombs then nothing will happen.
+
 ## Get set up for building
 
 First download `winmine.exe` for Windows 2000/NT 4.0. It can be found on [archive.org](https://archive.org/details/BestOfWindowsEntertainmentPack64Bit). Other version of `winmine.exe` is not tested and is likely not to work since function call addresses possibly will be changed. For the install target of cmake to work move `winmine.exe` to `external/` in the repository.
