@@ -154,3 +154,4 @@ $RECYCLE.BIN/
 build/*
 buildx86/*
 buildx64/*
+bin/*
