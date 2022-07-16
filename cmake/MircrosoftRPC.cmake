@@ -1,0 +1,91 @@
+function(CreateIDLHeaders)
+foreach(X IN LISTS ARGN)
+    get_filename_component(name ${X} NAME_WLE)
+    get_filename_component(abs ${X} ABSOLUTE)
+    get_filename_component(abs_dir ${abs} PATH)
+        string(REPLACE ${PROJECT_SOURCE_DIR} "" dir ${abs_dir})
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${dir})
+    string(TOLOWER ${CMAKE_VS_PLATFORM_NAME} PLT_FLAG)
+    # set created file paths
+    set(__${name}_client_path "${CMAKE_BINARY_DIR}/${dir}/${name}_c.c" CACHE INTERNAL "")
+    set(__${name}_server_path "${CMAKE_BINARY_DIR}/${dir}/${name}_s.c" CACHE INTERNAL "")
+    set(__${name}_header_path "${CMAKE_BINARY_DIR}/${dir}/${name}.h" CACHE INTERNAL "")
+    set(__${name}_include_path "${CMAKE_BINARY_DIR}/${dir}" CACHE INTERNAL "")
+    if(EXISTS "${abs_dir}/${name}.acf")
+        set(acf_flag "-acf")
+        set(acf_path "${abs_dir}/${name}.acf")
+        execute_process(COMMAND "midl" "${X}" "-${PLT_FLAG}" "${acf_flag}" "${acf_path}" "-out" "${CMAKE_BINARY_DIR}/${dir}" RESULTS_VARIABLE test_var WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+
+    else()
+        message("NOT FOUND: ${abs_dir}/${name}.acf")
+        execute_process(COMMAND "midl" "${X}" "-${PLT_FLAG}" "-out" "${CMAKE_BINARY_DIR}/${dir}" RESULTS_VARIABLE test_var WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+
+    endif()
+endforeach()
+endfunction()
+
+function(GetIDLHeaderNames)
+# Last arg is variable name. save and remove from list.
+list(LENGTH ARGN FUNC_ARGC)
+math(EXPR LAST_IDX "${FUNC_ARGC} - 1")
+list(GET ARGN ${LAST_IDX} VAR_NAME)
+list(REMOVE_AT ARGN ${LAST_IDX})
+# Get the rest of the args and return correct names.
+foreach(X IN LISTS ARGN)
+    get_filename_component(name ${X} NAME_WLE)
+    if(DEFINED __${name}_header_path AND EXISTS ${__${name}_header_path})
+        set(VAR_VALUE "${VAR_VALUE}${__${name}_header_path};")
+    endif()
+endforeach()
+set(${VAR_NAME} "${VAR_VALUE}" PARENT_SCOPE)
+endfunction()
+
+function(GetIDLClientNames)
+# Last arg is variable name. save and remove from list.
+list(LENGTH ARGN FUNC_ARGC)
+math(EXPR LAST_IDX "${FUNC_ARGC} - 1")
+list(GET ARGN ${LAST_IDX} VAR_NAME)
+list(REMOVE_AT ARGN ${LAST_IDX})
+# Get the rest of the args and return correct names.
+foreach(X IN LISTS ARGN)
+    get_filename_component(name ${X} NAME_WLE)
+    if(DEFINED __${name}_client_path AND EXISTS ${__${name}_client_path})
+        set(VAR_VALUE "${VAR_VALUE}${__${name}_client_path};")
+    endif()
+endforeach()
+set(${VAR_NAME} "${VAR_VALUE}" PARENT_SCOPE)
+endfunction()
+
+function(GetIDLServerNames)
+# Last arg is variable name. save and remove from list.
+list(LENGTH ARGN FUNC_ARGC)
+math(EXPR LAST_IDX "${FUNC_ARGC} - 1")
+list(GET ARGN ${LAST_IDX} VAR_NAME)
+list(REMOVE_AT ARGN ${LAST_IDX})
+# Get the rest of the args and return correct names.
+foreach(X IN LISTS ARGN)
+    # Attempts to find file relative to PROJECT_SOURCE_DIR
+    get_filename_component(name ${X} NAME_WLE)
+    if(DEFINED __${name}_server_path AND EXISTS ${__${name}_server_path})
+        set(VAR_VALUE "${VAR_VALUE}${__${name}_server_path};")
+    endif()
+endforeach()
+set(${VAR_NAME} "${VAR_VALUE}" PARENT_SCOPE)
+endfunction()
+
+function(GetIDLIncludeDirs)
+# Last arg is variable name. save and remove from list.
+list(LENGTH ARGN FUNC_ARGC)
+math(EXPR LAST_IDX "${FUNC_ARGC} - 1")
+list(GET ARGN ${LAST_IDX} VAR_NAME)
+list(REMOVE_AT ARGN ${LAST_IDX})
+# Get the rest of the args and return correct names.
+foreach(X IN LISTS ARGN)
+    # Attempts to find file relative to PROJECT_SOURCE_DIR
+    get_filename_component(name ${X} NAME_WLE)
+    if(DEFINED __${name}_include_path AND EXISTS ${__${name}_include_path})
+        set(VAR_VALUE "${VAR_VALUE}${__${name}_include_path};")
+    endif()
+endforeach()
+set(${VAR_NAME} "${VAR_VALUE}" PARENT_SCOPE)
+endfunction()

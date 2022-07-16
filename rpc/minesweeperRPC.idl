@@ -1,0 +1,13 @@
+[
+uuid(1d565b83-0fa6-4a77-b493-8a86c237896d),
+version(1.0)
+]
+interface minesweeper {
+    typedef enum {RPC_GAME_RUNNING=0, RPC_GAME_WON=1, RPC_GAME_LOST=2} RPC_game_status_t; 
+    void RPC_ResetField(void);
+    void RPC_GetField([out,size_is(720)] char fieldBuffer[*]);
+    unsigned char RPC_GetFieldHeight(void);
+    unsigned char RPC_GetFieldWidth(void);
+    void RPC_ClickOnTile(unsigned char x, unsigned char y);
+    RPC_game_status_t RPC_GetGameStatus(void);
+}

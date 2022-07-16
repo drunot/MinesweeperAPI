@@ -1,0 +1,6 @@
+[
+    implicit_handle (handle_t minesweeper_IfHandle)
+]
+interface minesweeper
+{
+}
